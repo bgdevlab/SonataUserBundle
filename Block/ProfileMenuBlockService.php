@@ -69,6 +69,7 @@ class ProfileMenuBlockService extends MenuBlockService
         $resolver->setDefaults(array(
             'cache_policy' => 'private',
             'menu_class'   => "nav nav-list",
+            'menu_template' => "SonataBlockBundle:Block:block_side_menu_template.html.twig",
         ));
     }
 
@@ -85,12 +86,19 @@ class ProfileMenuBlockService extends MenuBlockService
     /**
      * {@inheritdoc}
      */
-    protected function getMenu(array $settings)
+    protected function getMenu(BlockContextInterface $blockContext)
     {
-        $menu = parent::getMenu($settings);
+        $settings = $blockContext->getSettings();
+        
+        $menu = parent::getMenu($blockContext);
 
         if (null === $menu || "" === $menu) {
-            $menu = $this->menuBuilder->createProfileMenu(array('childrenAttributes' => array('class' => $settings['menu_class'])));
+            $menu = $this->menuBuilder->createProfileMenu(
+                array(
+                    'childrenAttributes' => array('class' => $settings['menu_class']),
+                    'attributes'         => array('class' => $settings['children_class']),
+                )
+            );
             $menu->setCurrentUri($settings['current_uri']);
         }
 
